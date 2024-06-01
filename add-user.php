@@ -8,7 +8,7 @@ if(isset($_GET['action'])&&$_GET['action']='edit'&&isset($_GET['id'])){
     if($user){
         $user=$getsql->fetchAll(PDO::FETCH_ASSOC);
         $user=array_shift($user);
-        $found='update';
+        
     }
 }
 

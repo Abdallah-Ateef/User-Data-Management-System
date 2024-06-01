@@ -1,6 +1,8 @@
 
 <?php
+session_start();
 require "connection_db.php";
+
 /* insert user */
 if(isset($_POST['submit'])){
     $name=filter_input(INPUT_POST,'name',FILTER_SANITIZE_STRING);
@@ -10,12 +12,14 @@ if(isset($_POST['submit'])){
     if($_POST['submit']=='update'){
         $id=filter_input(INPUT_POST,'id',FILTER_SANITIZE_NUMBER_INT);
         $insersql="update users set name=:name,email=:email,password=:password,mobile=:mobile where id=$id";
-    }else{$insersql='insert into users(name,email,password,mobile) values(:name,:email,:password,:mobile)';}
+        $_SESSION['found']='update';
+    }else{$insersql='insert into users(name,email,password,mobile) values(:name,:email,:password,:mobile)'; $_SESSION['found']='insert';}
     
     $insertuser=$connection_db->prepare($insersql);
     $insertuser=$insertuser->execute(array(':name'=>$name,':email'=>$email,':password'=>$pass,':mobile'=>$mobile));
     if($insertuser){
-        $found='insert';
+        
+        
     }
 }
 
@@ -32,12 +36,10 @@ if(isset($_GET['action'])&&$_GET['action']=='del' &&isset($_GET['id'])){
   $delsql='delete from users where id=:id';
   $delstmt=$connection_db->prepare($delsql);
   if($delstmt->execute(array(':id'=>$id))){
-    $found='del';
+    $_SESSION['found']='del';
   };
 }
-echo '<pre>';
-var_dump($_POST);
-echo '</pre>';
+var_dump($_SESSION['found']);
 
 ?>
 
@@ -104,12 +106,12 @@ echo '</pre>';
     
     
     
-    <?php if(isset($found)){
-        if($found=='insert'){?>
+    <?php if(isset($_SESSION['found'])){
+        if($_SESSION['found']=='insert'){?>
         <script src="script.js"> addsucc()</script>
 
-   <?php }elseif($found=='del'){?>
-     <script src="script.js"> addsucc()</script>
+   <?php }elseif($_SESSION['found']=='del'){?>
+     <script src="script.js"> delsucc()</script>
 
    <?php } }?>
 </body>
